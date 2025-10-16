@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Aternos Minecraft Server</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background-color: #1e1e1e;
+      color: white;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    #status {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌍 My Minecraft Server</h1>
+  <p id="status">Checking server...</p>
+  <button id="request">📢 Request Server Start</button>
+
+  <!-- EmailJS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    // Initialize EmailJS
+    (function() {
+      emailjs.init("YOUR_PUBLIC_KEY_HERE"); // Replace with your EmailJS Public Key
+    })();
+
+    const server = "myserver.aternos.me"; // Replace with your Aternos server address
+
+    // Check server status
+    fetch(`https://api.mcsrvstat.us/2/${server}`)
+      .then(res => res.json())
+      .then(data => {
+        const status = document.getElementById("status");
+        if (data.online) {
+          status.textContent = `🟢 Online! ${data.players.online}/${data.players.max} players`;
+        } else {
+          status.textContent = "🔴 Offline";
+        }
+      })
+      .catch(() => {
+        document.getElementById("status").textContent = "⚠️ Error checking status";
+      });
+
+    // When the user clicks "Request Server Start"
+    document.getElementById("request").addEventListener("click", () => {
+      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        message: `Someone requested to start the Minecraft server: ${server}`,
+      })
+      .then(() => {
+        alert("✅ Request sent! Check your email.");
+      }, (err) => {
+        alert("⚠️ Failed to send email: " + JSON.stringify(err));
+      });
+    });
+  </script>
+</body>
+</html>
